@@ -1,3 +1,9 @@
-name : Our First Workflo
-on: push  #event
+name: Our First Workflow
+on: push
+jobs: 
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Hello, GitHub Actions!"
+      
 
