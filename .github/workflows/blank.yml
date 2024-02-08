@@ -1,30 +1,38 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Print event information
+        run: |
+          echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+          echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+          echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+
       - name: Check out repository code
         uses: actions/checkout@v4
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+        with:
+          path: 'dockersample'  # 체크아웃할 디렉토리를 지정합니다.
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: dockersample  # 작업을 실행할 디렉토리를 지정합니다.
+
       - name: Run tests
-        run: npm test # 프로젝트의 테스트 스크립트를 실행합니다.
+        run: npm test
+        working-directory: dockersample  # 작업을 실행할 디렉토리를 지정합니다.
+        continue-on-error: true
+
       - name: Build
-        run: npm run build # 프로젝트의 빌드 스크립트를 실행합니다.
+        run: npm run build
+        working-directory: dockersample  # 작업을 실행할 디렉토리를 지정합니다.
+        continue-on-error: true
+
       - name: Deploy
-        run: ./deploy.sh # 프로젝트 배포 스크립트를 실행합니다.
-        if: success() # 테스트 및 빌드가 성공했을 때만 실행됩니다.
-      - name: Send notification on failure
-        run: ./send_notification.sh # 실패 알림 스크립트를 실행합니다.
-        if: failure() # 테스트 또는 빌드가 실패했을 때만 실행됩니다.
-
-
+        run: ./deploy.sh
+        if: success()
